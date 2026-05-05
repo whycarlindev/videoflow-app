@@ -61,6 +61,19 @@ describe('Create Question Use Case', () => {
 
 - **Never use NestJS IoC** — instantiate everything manually with `new`.
 - **Never use real databases or external services** — use in-memory repositories and fake implementations.
+- **Never use `if` statements inside test bodies** — conditional logic hides intent and can silently pass. Instead:
+  - Use `assert(result.isRight())` (Vitest's `assert` acts as a type guard, narrowing the type for subsequent assertions).
+  - Or chain typed matchers. If the `Either` result type is fully typed, TypeScript will enforce safe access after a narrowing assertion.
+  ```typescript
+  // ❌ BAD — if hides the failure branch; test may silently skip assertions
+  if (result.isRight()) {
+    expect(result.value.question).toBeDefined()
+  }
+
+  // ✅ GOOD — assert() throws on failure and narrows the type
+  assert(result.isRight())
+  expect(result.value.question).toBeDefined()
+  ```
 - Use `InMemory{Resource}sRepository` classes from `test/repositories/`.
 - Use `FakeHasher`, `FakeEncrypter`, `FakeUploader` from `test/cryptography/` and `test/storage/`.
 - Use factory functions (`makeQuestion()`, `makeAnswer()`, etc.) from `test/factories/` to build domain objects.
@@ -174,3 +187,5 @@ export class QuestionFactory {
 - Path aliases available: `@` → `src/`, `@test` → `test/`.
 - Never import from `jest` — this project uses Vitest.
 - Coverage is measured with the `v8` provider.
+
+

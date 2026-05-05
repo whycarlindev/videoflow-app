@@ -46,6 +46,8 @@ The Three-Layer Pattern is mandatory for any resource requiring data persistence
    - Inject the abstract `CacheRepository` port (never import Redis directly).
    - Invalidate caches in `save()` and `delete()` methods.
 
+
+
 ## Example Implementation
 
 **Abstract Contract**

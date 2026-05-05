@@ -72,6 +72,8 @@ domain/
 - **No NestJS imports** — except `@Injectable()` on use-case classes (accepted trade-off for DI)
 - **No Prisma imports** — repositories are abstract classes, not implementations
 - **No HTTP concerns** — no request/response types, no status codes
+- **No exceptions anywhere in the domain** — entities, value-objects, and use cases must never `throw`. All failures travel as `Either<DomainError, Value>`. Entity/VO static `create()` methods return `Either` for invalid input.
+- **Centralize error messages**: Error strings must not be hardcoded inline inside error classes. Declare them in a shared `enum` or `const` object (e.g., `DomainErrorMessages`) living in `use-cases/errors/` or `core/errors/` depending on scope. Error classes reference the constant.
 - Domain errors implement `UseCaseError` and live in `use-cases/errors/`
 - Repository contracts are `abstract class` (not `interface`) so NestJS can use them as DI tokens
 
@@ -115,9 +117,9 @@ infra/
 
 | Building Block | Base Class | Where it lives | When to use |
 |---|---|---|---|
-| **Entity** | `Entity<Props>` | `enterprise/entities/` | Has identity (`id`), mutable state |
+| **Entity** | `Entity<Props>` | `enterprise/entities/` | Has identity (`id`), mutable state. Static `create()` returns `Either<DomainError, Entity>` for invariant violations — never throws. |
 | **Aggregate Root** | `AggregateRoot<Props>` | `enterprise/entities/` | Entry point for a consistency boundary; can emit domain events |
-| **Value Object** | `ValueObject<Props>` | `enterprise/entities/value-objects/` | Immutable, identity by value (e.g. `Slug`, `Email`) |
+| **Value Object** | `ValueObject<Props>` | `enterprise/entities/value-objects/` | Immutable, identity by value (e.g. `Slug`, `Email`). Static `create()` returns `Either<DomainError, VO>` for invalid input — never throws. |
 | **Domain Event** | `DomainEvent` interface | `enterprise/events/` | Something that happened in the domain (past tense name) |
 | **Use Case** | none (plain class) | `application/use-cases/` | One operation, one `execute()` method |
 | **Repository (contract)** | `abstract class` | `application/repositories/` | Data access interface; no implementation |
