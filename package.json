@@ -1,0 +1,22 @@
+{
+  "name": "videoflow",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "api": "bun run --cwd apps/api dev",
+    "test:api": "bun run --cwd apps/api test",
+    "build:api": "bun run --cwd apps/api build",
+    "typecheck:api": "bun run --cwd apps/api typecheck",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "check": "biome check .",
+    "check:fix": "biome check --write ."
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14"
+  }
+}
