@@ -1,6 +1,6 @@
 import { makeWatchEntry } from 'test/factories/make-watch-entry'
 import { InMemoryWatchHistoryRepository } from 'test/repositories/in-memory-watch-history-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { ClearWatchHistoryUseCase } from '@/domain/watch-history/application/use-cases/clear-watch-history'
 

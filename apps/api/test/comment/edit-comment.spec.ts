@@ -1,6 +1,6 @@
 import { makeComment } from 'test/factories/make-comment'
 import { InMemoryCommentsRepository } from 'test/repositories/in-memory-comments-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { EditCommentUseCase } from '@/domain/comment/application/use-cases/edit-comment'
 
@@ -13,7 +13,7 @@ describe('EditCommentUseCase', () => {
     sut = new EditCommentUseCase(commentsRepository)
   })
 
-  it('should edit a comment content', async () => {
+  it('should be able to edit a comment content', async () => {
     const authorId = new UniqueEntityId()
     const comment = makeComment({ authorId, content: 'Old content' })
     commentsRepository.items.push(comment)
@@ -24,10 +24,8 @@ describe('EditCommentUseCase', () => {
       content: 'New content',
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.comment.content).toBe('New content')
-    }
+    assert(result.isRight())
+    expect(result.value.comment.content).toBe('New content')
   })
 
   it('should return NotAllowedError if not the author', async () => {

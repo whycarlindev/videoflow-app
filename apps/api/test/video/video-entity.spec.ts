@@ -1,5 +1,4 @@
 import { makeVideo } from 'test/factories/make-video'
-import { describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { VideoStatus } from '@/domain/video/enterprise/entities/value-objects/video-status'
 import { VideoTagsList } from '@/domain/video/enterprise/entities/video-tags-list'
@@ -17,15 +16,17 @@ describe('Video entity', () => {
 
   it('should publish and emit VideoPublishedEvent', () => {
     const video = makeVideo()
-    video.publish()
+    const result = video.publish()
+    expect(result.isRight()).toBe(true)
     expect(video.status.isPublished()).toBe(true)
     // VideoCreatedEvent (on create) + VideoPublishedEvent (on publish)
     expect(video.domainEvents).toHaveLength(2)
   })
 
-  it('should throw when publishing an already published video', () => {
+  it('should not be able to publish an already published video', () => {
     const video = makeVideo({ status: VideoStatus.published() })
-    expect(() => video.publish()).toThrow()
+    const result = video.publish()
+    expect(result.isLeft()).toBe(true)
   })
 
   it('should soft-delete a video', () => {

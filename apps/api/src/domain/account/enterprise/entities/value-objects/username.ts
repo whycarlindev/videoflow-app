@@ -1,4 +1,6 @@
+import { Either, left, right } from '@/core/either'
 import { ValueObject } from '@/core/entities/value-object'
+import { InvalidUsernameError } from '../../errors/invalid-username-error'
 
 interface UsernameProps {
   value: string
@@ -18,12 +20,10 @@ export class Username extends ValueObject<UsernameProps> {
     return usernameRegex.test(username)
   }
 
-  static create(username: string): Username {
+  static create(username: string): Either<InvalidUsernameError, Username> {
     if (!Username.isValid(username)) {
-      throw new Error(
-        `Invalid username: "${username}". Must be 3-30 alphanumeric characters or underscores.`,
-      )
+      return left(new InvalidUsernameError())
     }
-    return new Username({ value: username })
+    return right(new Username({ value: username }))
   }
 }

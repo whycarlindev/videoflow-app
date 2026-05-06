@@ -1,6 +1,6 @@
 import { makePlaylist } from 'test/factories/make-playlist'
 import { InMemoryPlaylistsRepository } from 'test/repositories/in-memory-playlists-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { AddVideoToPlaylistUseCase } from '@/domain/playlist/application/use-cases/add-video-to-playlist'
 
@@ -13,7 +13,7 @@ describe('AddVideoToPlaylistUseCase', () => {
     sut = new AddVideoToPlaylistUseCase(playlistsRepository)
   })
 
-  it('should add a video to the playlist', async () => {
+  it('should be able to add a video to the playlist', async () => {
     const authorId = new UniqueEntityId()
     const playlist = makePlaylist({ authorId })
     playlistsRepository.items.push(playlist)
@@ -25,10 +25,8 @@ describe('AddVideoToPlaylistUseCase', () => {
       authorId: authorId.toString(),
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.playlist.videos.getItems()).toHaveLength(1)
-    }
+    assert(result.isRight())
+    expect(result.value.playlist.videos.getItems()).toHaveLength(1)
   })
 
   it('should return VideoAlreadyInPlaylistError on duplicate', async () => {

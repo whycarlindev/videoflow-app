@@ -1,7 +1,8 @@
 import { UseCaseError } from '@/core/errors/use-case-error'
+import { VideoErrorMessages } from './error-messages'
 
 export class VideoAlreadyPublishedError extends Error implements UseCaseError {
   constructor() {
-    super('Video is already published')
+    super(VideoErrorMessages.VIDEO_ALREADY_PUBLISHED)
   }
 }

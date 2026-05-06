@@ -1,6 +1,6 @@
 import { makeVideo } from 'test/factories/make-video'
 import { InMemoryVideosRepository } from 'test/repositories/in-memory-videos-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { PublishVideoUseCase } from '@/domain/video/application/use-cases/publish-video'
 import { VideoStatus } from '@/domain/video/enterprise/entities/value-objects/video-status'
@@ -24,10 +24,8 @@ describe('PublishVideoUseCase', () => {
       authorId: authorId.toString(),
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.video.status.isPublished()).toBe(true)
-    }
+    assert(result.isRight())
+    expect(result.value.video.status.isPublished()).toBe(true)
   })
 
   it('should return NotAllowedError if not the author', async () => {

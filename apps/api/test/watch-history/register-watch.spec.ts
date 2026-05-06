@@ -2,7 +2,7 @@ import { makeVideo } from 'test/factories/make-video'
 import { makeWatchEntry } from 'test/factories/make-watch-entry'
 import { InMemoryVideosRepository } from 'test/repositories/in-memory-videos-repository'
 import { InMemoryWatchHistoryRepository } from 'test/repositories/in-memory-watch-history-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { RegisterWatchUseCase } from '@/domain/watch-history/application/use-cases/register-watch'
 
@@ -57,7 +57,7 @@ describe('RegisterWatchUseCase', () => {
     expect(videosRepository.items[0].viewsCount).toBe(1)
   })
 
-  it('should mark as completed when progress >= 95%', async () => {
+  it('should be able to mark as completed when progress >= 95%', async () => {
     const video = makeVideo()
     videosRepository.items.push(video)
 
@@ -67,10 +67,8 @@ describe('RegisterWatchUseCase', () => {
       progressPercentage: 97,
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.watchEntry.completed).toBe(true)
-    }
+    assert(result.isRight())
+    expect(result.value.watchEntry.completed).toBe(true)
   })
 
   it('should return ResourceNotFoundError if video does not exist', async () => {

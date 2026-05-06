@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { Either, left, right } from '@/core/either'
 import { User } from '../../enterprise/entities/user'
+import { InvalidEmailError } from '../../enterprise/errors/invalid-email-error'
+import { InvalidUsernameError } from '../../enterprise/errors/invalid-username-error'
 import { Email } from '../../enterprise/entities/value-objects/email'
 import { Username } from '../../enterprise/entities/value-objects/username'
 import { UsersRepository } from '../repositories/users-repository'
@@ -14,7 +16,7 @@ type RegisterUserUseCaseRequest = {
 }
 
 type RegisterUserUseCaseResponse = Either<
-  UserAlreadyExistsError | UsernameAlreadyTakenError,
+  InvalidEmailError | InvalidUsernameError | UserAlreadyExistsError | UsernameAlreadyTakenError,
   { user: User }
 >
 
@@ -27,8 +29,14 @@ export class RegisterUserUseCase {
     username,
     passwordHash,
   }: RegisterUserUseCaseRequest): Promise<RegisterUserUseCaseResponse> {
-    const emailVO = Email.create(email)
-    const usernameVO = Username.create(username)
+    const emailResult = Email.create(email)
+    if (emailResult.isLeft()) return left(emailResult.value)
+
+    const usernameResult = Username.create(username)
+    if (usernameResult.isLeft()) return left(usernameResult.value)
+
+    const emailVO = emailResult.value
+    const usernameVO = usernameResult.value
 
     const existingByEmail = await this.usersRepository.findByEmail(emailVO.value)
 

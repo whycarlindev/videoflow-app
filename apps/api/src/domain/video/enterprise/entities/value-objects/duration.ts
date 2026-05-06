@@ -1,4 +1,6 @@
+import { Either, left, right } from '@/core/either'
 import { ValueObject } from '@/core/entities/value-object'
+import { InvalidDurationError } from '../../errors/invalid-duration-error'
 
 interface DurationProps {
   seconds: number
@@ -13,11 +15,11 @@ export class Duration extends ValueObject<DurationProps> {
     super(props)
   }
 
-  static create(seconds: number): Duration {
+  static create(seconds: number): Either<InvalidDurationError, Duration> {
     if (seconds < 0) {
-      throw new Error('Duration cannot be negative')
+      return left(new InvalidDurationError())
     }
-    return new Duration({ seconds })
+    return right(new Duration({ seconds }))
   }
 
   format(): string {

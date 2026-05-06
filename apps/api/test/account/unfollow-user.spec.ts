@@ -2,7 +2,6 @@ import { makeSubscription } from 'test/factories/make-subscription'
 import { makeUser } from 'test/factories/make-user'
 import { InMemorySubscriptionsRepository } from 'test/repositories/in-memory-subscriptions-repository'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { UnfollowUserUseCase } from '@/domain/account/application/use-cases/unfollow-user'
 

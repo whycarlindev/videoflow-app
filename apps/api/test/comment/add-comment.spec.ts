@@ -1,7 +1,7 @@
 import { makeVideo } from 'test/factories/make-video'
 import { InMemoryCommentsRepository } from 'test/repositories/in-memory-comments-repository'
 import { InMemoryVideosRepository } from 'test/repositories/in-memory-videos-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { AddCommentUseCase } from '@/domain/comment/application/use-cases/add-comment'
 
 describe('AddCommentUseCase', () => {
@@ -15,7 +15,7 @@ describe('AddCommentUseCase', () => {
     sut = new AddCommentUseCase(commentsRepository, videosRepository)
   })
 
-  it('should add a comment to an existing video', async () => {
+  it('should be able to add a comment to an existing video', async () => {
     const video = makeVideo()
     videosRepository.items.push(video)
 
@@ -25,11 +25,9 @@ describe('AddCommentUseCase', () => {
       content: 'Great video!',
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.comment.content).toBe('Great video!')
-      expect(commentsRepository.items).toHaveLength(1)
-    }
+    assert(result.isRight())
+    expect(result.value.comment.content).toBe('Great video!')
+    expect(commentsRepository.items).toHaveLength(1)
   })
 
   it('should return ResourceNotFoundError if video does not exist', async () => {

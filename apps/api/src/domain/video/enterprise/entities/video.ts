@@ -1,6 +1,8 @@
+import { Either, left, right } from '@/core/either'
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
+import { InvalidVideoStateError } from '../errors/invalid-video-state-error'
 import { VideoCreatedEvent } from '../events/video-created-event'
 import { VideoLikedEvent } from '../events/video-liked-event'
 import { VideoPublishedEvent } from '../events/video-published-event'
@@ -90,21 +92,23 @@ export class Video extends AggregateRoot<VideoProps> {
     return this.props.status.isPublished()
   }
 
-  markAsProcessing(): void {
+  markAsProcessing(): Either<InvalidVideoStateError, void> {
     if (!this.props.status.isPending()) {
-      throw new Error('Video must be pending to mark as processing')
+      return left(new InvalidVideoStateError())
     }
     this.props.status = VideoStatus.processing()
     this.touch()
+    return right(undefined)
   }
 
-  publish(): void {
+  publish(): Either<InvalidVideoStateError, void> {
     if (!this.props.status.isProcessing() && !this.props.status.isPending()) {
-      throw new Error('Only pending or processing videos can be published')
+      return left(new InvalidVideoStateError())
     }
     this.props.status = VideoStatus.published()
     this.touch()
     this.addDomainEvent(new VideoPublishedEvent(this))
+    return right(undefined)
   }
 
   delete(): void {

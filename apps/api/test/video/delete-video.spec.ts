@@ -1,6 +1,5 @@
 import { makeVideo } from 'test/factories/make-video'
 import { InMemoryVideosRepository } from 'test/repositories/in-memory-videos-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { DeleteVideoUseCase } from '@/domain/video/application/use-cases/delete-video'
 

@@ -1,5 +1,5 @@
 import { InMemoryPlaylistsRepository } from 'test/repositories/in-memory-playlists-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { assert } from 'test/utils/assert'
 import { CreatePlaylistUseCase } from '@/domain/playlist/application/use-cases/create-playlist'
 
 describe('CreatePlaylistUseCase', () => {
@@ -11,31 +11,27 @@ describe('CreatePlaylistUseCase', () => {
     sut = new CreatePlaylistUseCase(playlistsRepository)
   })
 
-  it('should create a playlist', async () => {
+  it('should be able to create a playlist', async () => {
     const result = await sut.execute({
       title: 'My Favorites',
       authorId: 'user-1',
       isPublic: true,
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.playlist.title).toBe('My Favorites')
-      expect(result.value.playlist.isPublic).toBe(true)
-      expect(playlistsRepository.items).toHaveLength(1)
-    }
+    assert(result.isRight())
+    expect(result.value.playlist.title).toBe('My Favorites')
+    expect(result.value.playlist.isPublic).toBe(true)
+    expect(playlistsRepository.items).toHaveLength(1)
   })
 
-  it('should create a private playlist by default when isPublic is false', async () => {
+  it('should be able to create a private playlist when isPublic is false', async () => {
     const result = await sut.execute({
       title: 'Private List',
       authorId: 'user-1',
       isPublic: false,
     })
 
-    expect(result.isRight()).toBe(true)
-    if (result.isRight()) {
-      expect(result.value.playlist.isPublic).toBe(false)
-    }
+    assert(result.isRight())
+    expect(result.value.playlist.isPublic).toBe(false)
   })
 })

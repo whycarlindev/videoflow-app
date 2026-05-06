@@ -1,5 +1,4 @@
 import { makeUser } from 'test/factories/make-user'
-import { describe, expect, it } from 'vitest'
 
 describe('User entity (rich domain model)', () => {
   it('should start with zero subscribers', () => {

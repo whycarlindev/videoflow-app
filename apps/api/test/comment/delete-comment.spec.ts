@@ -1,6 +1,5 @@
 import { makeComment } from 'test/factories/make-comment'
 import { InMemoryCommentsRepository } from 'test/repositories/in-memory-comments-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { DeleteCommentUseCase } from '@/domain/comment/application/use-cases/delete-comment'
 

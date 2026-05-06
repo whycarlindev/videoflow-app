@@ -1,4 +1,6 @@
+import { Either, left, right } from '@/core/either'
 import { ValueObject } from '@/core/entities/value-object'
+import { InvalidEmailError } from '../../errors/invalid-email-error'
 
 interface EmailProps {
   value: string
@@ -18,11 +20,11 @@ export class Email extends ValueObject<EmailProps> {
     return emailRegex.test(email)
   }
 
-  static create(email: string): Email {
+  static create(email: string): Either<InvalidEmailError, Email> {
     const normalized = email.trim().toLowerCase()
     if (!Email.isValid(normalized)) {
-      throw new Error(`Invalid email: ${email}`)
+      return left(new InvalidEmailError())
     }
-    return new Email({ value: normalized })
+    return right(new Email({ value: normalized }))
   }
 }

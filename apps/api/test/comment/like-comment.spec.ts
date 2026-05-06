@@ -2,7 +2,6 @@ import { makeComment } from 'test/factories/make-comment'
 import { makeCommentLike } from 'test/factories/make-comment-like'
 import { InMemoryCommentLikesRepository } from 'test/repositories/in-memory-comment-likes-repository'
 import { InMemoryCommentsRepository } from 'test/repositories/in-memory-comments-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { LikeCommentUseCase } from '@/domain/comment/application/use-cases/like-comment'
 

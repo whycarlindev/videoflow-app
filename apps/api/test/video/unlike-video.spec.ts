@@ -2,7 +2,6 @@ import { makeVideo } from 'test/factories/make-video'
 import { makeVideoLike } from 'test/factories/make-video-like'
 import { InMemoryVideoLikesRepository } from 'test/repositories/in-memory-video-likes-repository'
 import { InMemoryVideosRepository } from 'test/repositories/in-memory-videos-repository'
-import { beforeEach, describe, expect, it } from 'vitest'
 import { UniqueEntityId } from '@/core/entities/unique-entity-id'
 import { UnlikeVideoUseCase } from '@/domain/video/application/use-cases/unlike-video'
 

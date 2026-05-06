@@ -1,7 +1,8 @@
 import { UseCaseError } from '@/core/errors/use-case-error'
+import { VideoErrorMessages } from './error-messages'
 
 export class VideoNotAvailableError extends Error implements UseCaseError {
   constructor() {
-    super('Video is not available')
+    super(VideoErrorMessages.VIDEO_NOT_AVAILABLE)
   }
 }
