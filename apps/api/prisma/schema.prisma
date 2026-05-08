@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  username         String    @unique
+  passwordHash     String    @map("password_hash")
+  avatarUrl        String?   @map("avatar_url")
+  bio              String?
+  subscribersCount Int       @default(0) @map("subscribers_count")
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime? @updatedAt @map("updated_at")
+
+  subscriptionsAsSubscriber Subscription[] @relation("Subscriber")
+  subscriptionsAsChannel    Subscription[] @relation("Channel")
+  videos                    Video[]
+  videoLikes                VideoLike[]
+  comments                  Comment[]
+  commentLikes              CommentLike[]
+  playlists                 Playlist[]
+  watchHistory              WatchEntry[]
+
+  @@map("users")
+}
+
+model Subscription {
+  id           String   @id @default(uuid())
+  subscriberId String   @map("subscriber_id")
+  channelId    String   @map("channel_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  subscriber User @relation("Subscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  channel    User @relation("Channel", fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriberId, channelId])
+  @@map("subscriptions")
+}
+
+model Video {
+  id           String    @id @default(uuid())
+  title        String
+  description  String
+  url          String?
+  thumbnailUrl String?   @map("thumbnail_url")
+  duration     Int?
+  slug         String    @unique
+  authorId     String    @map("author_id")
+  status       String    @default("pending")
+  likesCount   Int       @default(0) @map("likes_count")
+  viewsCount   Int       @default(0) @map("views_count")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tags          VideoTag[]
+  likes         VideoLike[]
+  comments      Comment[]
+  playlistItems PlaylistItem[]
+  watchEntries  WatchEntry[]
+
+  @@map("videos")
+}
+
+model VideoTag {
+  id      String @id @default(uuid())
+  videoId String @map("video_id")
+  tag     String
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, tag])
+  @@map("video_tags")
+}
+
+model VideoLike {
+  id        String   @id @default(uuid())
+  videoId   String   @map("video_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([videoId, userId])
+  @@map("video_likes")
+}
+
+model Comment {
+  id         String    @id @default(uuid())
+  videoId    String    @map("video_id")
+  authorId   String    @map("author_id")
+  content    String
+  likesCount Int       @default(0) @map("likes_count")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  video  Video         @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  author User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes  CommentLike[]
+
+  @@map("comments")
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  commentId String   @map("comment_id")
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@map("comment_likes")
+}
+
+model Playlist {
+  id          String    @id @default(uuid())
+  title       String
+  description String?
+  authorId    String    @map("author_id")
+  isPublic    Boolean   @default(true) @map("is_public")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  author User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  items  PlaylistItem[]
+
+  @@map("playlists")
+}
+
+model PlaylistItem {
+  id         String   @id @default(uuid())
+  playlistId String   @map("playlist_id")
+  videoId    String   @map("video_id")
+  position   Int
+  addedAt    DateTime @default(now()) @map("added_at")
+
+  playlist Playlist @relation(fields: [playlistId], references: [id], onDelete: Cascade)
+  video    Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([playlistId, videoId])
+  @@map("playlist_items")
+}
+
+model WatchEntry {
+  id                 String   @id @default(uuid())
+  userId             String   @map("user_id")
+  videoId            String   @map("video_id")
+  progressPercentage Int      @default(0) @map("progress_percentage")
+  completed          Boolean  @default(false)
+  watchedAt          DateTime @default(now()) @map("watched_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@map("watch_entries")
+}
