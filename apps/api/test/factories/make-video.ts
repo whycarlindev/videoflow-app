@@ -4,7 +4,7 @@ import { Video, VideoProps } from '@/domain/video/enterprise/entities/video'
 export function makeVideo(override: Partial<VideoProps> = {}, id?: UniqueEntityId): Video {
   return Video.create(
     {
-      title: 'Sample Video Title',
+      title: `Video ${Math.random().toString(36).slice(2)}`,
       description: 'A test video description.',
       authorId: new UniqueEntityId(),
       ...override,
