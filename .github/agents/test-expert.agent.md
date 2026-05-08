@@ -18,7 +18,15 @@ There are two distinct test layers. Each has different conventions.
 
 ## Unit Tests (`.spec.ts`)
 
-Unit tests live **colocated** with the source file they test (same directory).
+Unit tests live **colocated** with the source file they test — **same directory, same name, `.spec.ts` extension**.
+
+> ✅ `src/domain/video/application/use-cases/publish-video.ts`
+> ✅ `src/domain/video/application/use-cases/publish-video.spec.ts` ← place here
+>
+> ✅ `src/domain/account/enterprise/entities/user.ts`
+> ✅ `src/domain/account/enterprise/entities/user.spec.ts` ← place here
+>
+> ❌ `test/video/publish-video.spec.ts` ← never here
 
 ### Structure
 
@@ -84,7 +92,12 @@ describe('Create Question Use Case', () => {
 
 ## E2E Tests (`.e2e-spec.ts`)
 
-E2E tests live **colocated** with the controller they test (in `src/infra/http/controllers/`).
+E2E tests live **colocated** with the controller they test — **same directory, same name, `.e2e-spec.ts` extension**.
+
+> ✅ `src/infra/http/controllers/publish-video.controller.ts`
+> ✅ `src/infra/http/controllers/publish-video.controller.e2e-spec.ts` ← place here
+>
+> ❌ `test/e2e/publish-video.e2e-spec.ts` ← never here
 
 ### Structure
 
@@ -184,7 +197,7 @@ export class QuestionFactory {
 ## Additional Rules
 
 - Test runner: **Vitest** with `globals: true` — no imports needed for `describe`, `it`, `test`, `expect`, `vi`, `beforeEach`, `beforeAll`, `afterAll`.
-- Path aliases available: `@` → `src/`, `@test` → `test/`.
+- Path aliases available: `@/` → `src/`, `test/` → `test/` (e.g. `import { makeVideo } from 'test/factories/make-video'`).
 - Never import from `jest` — this project uses Vitest.
 - Coverage is measured with the `v8` provider.
 
