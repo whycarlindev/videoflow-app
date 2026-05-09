@@ -41,18 +41,15 @@ describe('Upload Video (E2E)', () => {
     const user = await userFactory.makePrismaUser()
     const accessToken = jwtService.sign({ sub: user.id.toString() })
 
-    const fileContent = Buffer.from('fake-video-content').toString('base64')
-
     const response = await request(app.getHttpServer())
       .post('/videos')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        title: 'My First Video',
-        description: 'A video uploaded in an E2E test.',
-        fileName: 'video.mp4',
-        fileType: 'video/mp4',
-        fileBase64: fileContent,
-        tags: ['test', 'e2e'],
+      .field('title', 'My First Video')
+      .field('description', 'A video uploaded in an E2E test.')
+      .field('tags', JSON.stringify(['test', 'e2e']))
+      .attach('file', Buffer.from('fake-video-content'), {
+        filename: 'video.mp4',
+        contentType: 'video/mp4',
       })
 
     expect(response.statusCode).toBe(201)
@@ -69,14 +66,43 @@ describe('Upload Video (E2E)', () => {
   test('[POST] /videos — should not be able to upload without authentication', async () => {
     const response = await request(app.getHttpServer())
       .post('/videos')
-      .send({
-        title: 'Unauthorized Video',
-        description: 'This should fail.',
-        fileName: 'video.mp4',
-        fileType: 'video/mp4',
-        fileBase64: Buffer.from('content').toString('base64'),
+      .field('title', 'Unauthorized Video')
+      .field('description', 'This should fail.')
+      .attach('file', Buffer.from('content'), {
+        filename: 'video.mp4',
+        contentType: 'video/mp4',
       })
 
     expect(response.statusCode).toBe(401)
+  })
+
+  test('[POST] /videos — should not be able to upload without a file', async () => {
+    const user = await userFactory.makePrismaUser()
+    const accessToken = jwtService.sign({ sub: user.id.toString() })
+
+    const response = await request(app.getHttpServer())
+      .post('/videos')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .field('title', 'Missing File')
+      .field('description', 'No file attached.')
+
+    expect(response.statusCode).toBe(400)
+  })
+
+  test('[POST] /videos — should not be able to upload unsupported file type', async () => {
+    const user = await userFactory.makePrismaUser()
+    const accessToken = jwtService.sign({ sub: user.id.toString() })
+
+    const response = await request(app.getHttpServer())
+      .post('/videos')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .field('title', 'Wrong Type')
+      .field('description', 'PDF is not a video.')
+      .attach('file', Buffer.from('%PDF-fake'), {
+        filename: 'document.pdf',
+        contentType: 'application/pdf',
+      })
+
+    expect(response.statusCode).toBe(415)
   })
 })

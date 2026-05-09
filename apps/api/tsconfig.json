@@ -14,7 +14,7 @@
     "rootDir": ".",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "types": ["vitest/globals"]
+    "types": ["vitest/globals", "multer"]
   },
   "include": ["src/**/*", "test/**/*"],
   "exclude": ["node_modules", "dist"],
